@@ -1,0 +1,12 @@
+[package]
+name = "rusty-stager"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+kernel32-sys = "0.2.2"
+sysinfo = "0.29.10"
+reqwest = { version = "0.12.5", features = ["blocking"] }
+winapi = { version = "0.3.9", features = ["winnt"] }
